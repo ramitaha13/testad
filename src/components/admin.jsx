@@ -7,7 +7,32 @@ const mockStats = {
   todayReports: 34,
   missingReports: 5,
   pendingReview: 11,
+  systemManager: "אדמין ראשי",
 };
+
+const mockImportantNotes = [
+  {
+    id: 1,
+    title: "ישיבת צוות - מחר",
+    content: "ישיבת צוות שבועית בשעה 10:00 - חובה להגיע",
+    type: "info",
+    date: "20/03/2026",
+  },
+  {
+    id: 2,
+    title: "עדכון נהלים",
+    content: "נהלי דיווח חדשים נכנסו לתוקף החל מהשבוע",
+    type: "warning",
+    date: "18/03/2026",
+  },
+  {
+    id: 3,
+    title: "תזכורת - הגשת דוחות",
+    content: "יש להגיש את כל הדוחות עד סוף היום",
+    type: "error",
+    date: "19/03/2026",
+  },
+];
 
 const mockApartments = [
   {
@@ -228,7 +253,7 @@ export default function AdminDashboard() {
             {sidebarOpen && (
               <div className="overflow-hidden">
                 <div className="text-sm font-medium text-zinc-200 truncate">
-                  אדמין ראשי
+                  {mockStats.systemManager}
                 </div>
                 <div className="text-xs text-zinc-500">מנהל על</div>
               </div>
@@ -278,6 +303,13 @@ export default function AdminDashboard() {
 function DashboardView() {
   const stats = [
     {
+      label: "מנהל המערכת",
+      value: mockStats.systemManager,
+      icon: "◈",
+      color: "from-fuchsia-500 to-pink-500",
+      isText: true,
+    },
+    {
       label: "דירות פעילות",
       value: mockStats.apartments,
       icon: "⌂",
@@ -294,12 +326,6 @@ function DashboardView() {
       value: mockStats.todayReports,
       icon: "▦",
       color: "from-emerald-500 to-teal-500",
-    },
-    {
-      label: "דוחות חסרים",
-      value: mockStats.missingReports,
-      icon: "⚠",
-      color: "from-amber-500 to-orange-500",
     },
   ];
 
@@ -318,11 +344,75 @@ function DashboardView() {
               {s.icon}
             </div>
             <div>
-              <div className="text-2xl font-bold text-zinc-100">{s.value}</div>
+              <div
+                className={`${s.isText ? "text-lg" : "text-2xl"} font-bold text-zinc-100`}
+              >
+                {s.value}
+              </div>
               <div className="text-xs text-zinc-500">{s.label}</div>
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Important Notes Section */}
+      <div className="bg-[#111318] border border-zinc-800/60 rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
+            <span className="text-amber-400">📌</span>
+            הערות חשובות
+          </h2>
+          <button className="text-xs text-violet-400 hover:text-violet-300 transition-colors">
+            + הוסף הערה
+          </button>
+        </div>
+        <div className="space-y-3">
+          {mockImportantNotes.map((note) => {
+            const noteStyles = {
+              info: {
+                bg: "bg-sky-500/10",
+                border: "border-sky-500/25",
+                icon: "ℹ",
+                iconColor: "text-sky-400",
+              },
+              warning: {
+                bg: "bg-amber-500/10",
+                border: "border-amber-500/25",
+                icon: "⚠",
+                iconColor: "text-amber-400",
+              },
+              error: {
+                bg: "bg-red-500/10",
+                border: "border-red-500/25",
+                icon: "✕",
+                iconColor: "text-red-400",
+              },
+            };
+            const style = noteStyles[note.type];
+
+            return (
+              <div
+                key={note.id}
+                className={`${style.bg} border ${style.border} rounded-lg p-3 flex items-start gap-3`}
+              >
+                <span className={`${style.iconColor} text-sm mt-0.5 shrink-0`}>
+                  {style.icon}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-zinc-200">
+                    {note.title}
+                  </div>
+                  <div className="text-xs text-zinc-400 mt-1">
+                    {note.content}
+                  </div>
+                </div>
+                <div className="text-xs text-zinc-600 shrink-0">
+                  {note.date}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Two columns */}
