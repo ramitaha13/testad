@@ -8,14 +8,19 @@ import UsersPage from "./components/usersPage.jsx";
 import ReportsPage from "./components/reportsPage.jsx";
 import SocialWorkerAdmin from "./components/socialWorkerAdmin.jsx";
 import SocialWorkerReportsPage from "./components/socialWorkerReportsPage.jsx";
+import HomePage from "./components/homePage.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Admin />,
+    element: <HomePage />,
   },
   {
     path: "*",
+    element: <HomePage />,
+  },
+  {
+    path: "/admin",
     element: <Admin />,
   },
   {
