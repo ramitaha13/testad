@@ -6,6 +6,8 @@ import Admin from "./components/admin.jsx";
 import ApartmentsPage from "./components/apartmentsPage.jsx";
 import UsersPage from "./components/usersPage.jsx";
 import ReportsPage from "./components/reportsPage.jsx";
+import SocialWorkerAdmin from "./components/socialWorkerAdmin.jsx";
+import SocialWorkerReportsPage from "./components/socialWorkerReportsPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,14 @@ const router = createBrowserRouter([
   {
     path: "/reportsPage",
     element: <ReportsPage />,
+  },
+  {
+    path: "/socialWorkerAdmin",
+    element: <SocialWorkerAdmin />,
+  },
+  {
+    path: "/socialWorkerReportsPage",
+    element: <SocialWorkerReportsPage />,
   },
 ]);
 
