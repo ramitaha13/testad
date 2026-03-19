@@ -9,6 +9,8 @@ import ReportsPage from "./components/reportsPage.jsx";
 import SocialWorkerAdmin from "./components/socialWorkerAdmin.jsx";
 import SocialWorkerReportsPage from "./components/socialWorkerReportsPage.jsx";
 import HomePage from "./components/homePage.jsx";
+import HouseManagerDashboard from "./components/houseManagerDashboard.jsx";
+import InstructorDashboard from "./components/instructorDashboard.jsx";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +44,14 @@ const router = createBrowserRouter([
   {
     path: "/socialWorkerReportsPage",
     element: <SocialWorkerReportsPage />,
+  },
+  {
+    path: "/houseManagerDashboard",
+    element: <HouseManagerDashboard />,
+  },
+  {
+    path: "/instructorDashboard",
+    element: <InstructorDashboard />,
   },
 ]);
 

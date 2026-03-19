@@ -18,7 +18,7 @@ export default function HomePage() {
         </div>
 
         {/* Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {/* Admin Button */}
           <button
             onClick={() => (window.location.href = "/admin")}
@@ -69,6 +69,62 @@ export default function HomePage() {
               </p>
 
               <div className="flex items-center justify-center gap-2 text-sky-400 text-sm font-medium">
+                <span>כניסה למערכת</span>
+                <span className="group-hover:translate-x-1 transition-transform">
+                  ←
+                </span>
+              </div>
+            </div>
+          </button>
+
+          {/* House Manager Button */}
+          <button
+            onClick={() => (window.location.href = "/houseManagerDashboard")}
+            className="group relative bg-[#111318] border border-zinc-800/60 rounded-2xl p-8 hover:border-emerald-500/40 transition-all duration-300 hover:scale-105"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-teal-600/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+            <div className="relative">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl">
+                ⌂
+              </div>
+
+              <h2 className="text-xl font-semibold text-zinc-100 mb-2">
+                אב/אם בית
+              </h2>
+
+              <p className="text-sm text-zinc-500 mb-4">
+                ניהול דירה ודוחות משמרות
+              </p>
+
+              <div className="flex items-center justify-center gap-2 text-emerald-400 text-sm font-medium">
+                <span>כניסה למערכת</span>
+                <span className="group-hover:translate-x-1 transition-transform">
+                  ←
+                </span>
+              </div>
+            </div>
+          </button>
+
+          {/* Instructor Button */}
+          <button
+            onClick={() => (window.location.href = "/instructorDashboard")}
+            className="group relative bg-[#111318] border border-zinc-800/60 rounded-2xl p-8 hover:border-amber-500/40 transition-all duration-300 hover:scale-105"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-600/10 to-orange-600/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+            <div className="relative">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-2xl">
+                👤
+              </div>
+
+              <h2 className="text-xl font-semibold text-zinc-100 mb-2">
+                מדריך
+              </h2>
+
+              <p className="text-sm text-zinc-500 mb-4">מילוי דוחות משמרת</p>
+
+              <div className="flex items-center justify-center gap-2 text-amber-400 text-sm font-medium">
                 <span>כניסה למערכת</span>
                 <span className="group-hover:translate-x-1 transition-transform">
                   ←
