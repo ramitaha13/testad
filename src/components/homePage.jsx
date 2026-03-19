@@ -12,7 +12,7 @@ export default function HomePage() {
             מ
           </div>
           <h1 className="text-3xl font-bold text-zinc-100 mb-2">
-            מערכת ניהול דירות שיקום
+            מערכת ניהול דירות
           </h1>
           <p className="text-zinc-500 text-sm">בחר את סוג המשתמש שלך להמשך</p>
         </div>
