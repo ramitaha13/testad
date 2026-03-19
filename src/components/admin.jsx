@@ -169,11 +169,10 @@ const mockReports = [
 ];
 
 const NAV = [
-  { id: "dashboard", label: "דשבורד", icon: "⬡" },
-  { id: "apartments", label: "דירות", icon: "⌂" },
-  { id: "users", label: "משתמשים", icon: "◈" },
-  { id: "reports", label: "דוחות", icon: "▦" },
-  { id: "alerts", label: "התראות", icon: "◎" },
+  { id: "dashboard", label: "דשבורד", icon: "⬡", path: null },
+  { id: "apartments", label: "דירות", icon: "⌂", path: "/apartmentsPage" },
+  { id: "users", label: "משתמשים", icon: "◈", path: "/usersPage" },
+  { id: "reports", label: "דוחות", icon: "▦", path: "/reportsPage" },
 ];
 
 const statusBadge = (status) => {
@@ -200,6 +199,14 @@ const shiftIcon = (shift) =>
 export default function AdminDashboard() {
   const [active, setActive] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const handleNavClick = (item) => {
+    setActive(item.id);
+    // אם יש path, עבור לדף החדש
+    if (item.path) {
+      window.location.href = item.path;
+    }
+  };
 
   return (
     <div
@@ -228,7 +235,7 @@ export default function AdminDashboard() {
           {NAV.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActive(item.id)}
+              onClick={() => handleNavClick(item)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 w-full text-right
                 ${
                   active === item.id

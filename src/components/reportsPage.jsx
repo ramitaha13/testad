@@ -8,47 +8,45 @@ const initialReports = [
   {
     id: 1,
     apartment: "דירה א׳",
-    worker: "יוסי דהן",
-    shift: "בוקר",
-    date: "19/03/2025",
-    status: "נבדק",
-    notes: "כל הפעילויות בוצעו כמתוכנן",
-  },
-  {
-    id: 2,
-    apartment: "דירה ב׳",
-    worker: "שרה לוין",
-    shift: "צהריים",
-    date: "19/03/2025",
-    status: "נשלח",
-    notes: "דרושה התייחסות לנושא התרופות",
-  },
-  {
-    id: 3,
-    apartment: "דירה ג׳",
-    worker: "אלון בן דוד",
-    shift: "לילה",
-    date: "18/03/2025",
-    status: "נשלח",
-    notes: "אירוע קל בלילה, תועד במערכת",
-  },
-  {
-    id: 4,
-    apartment: "דירה ד׳",
-    worker: "רחל אברהם",
-    shift: "בוקר",
-    date: "19/03/2025",
+    shiftType: "בוקר",
+    supervisors: "",
+    startDate: "",
+    dayOfWeek: "",
+    generalInfo: "",
+    shiftDescription: "",
+    unusualEvent: "",
+    maintenanceTasks: "",
+    importantNotes: "",
+    supervisor1Name: "",
+    supervisor1Signature: "",
+    supervisor2Name: "",
+    supervisor2Signature: "",
+    receiver1Name: "",
+    receiver1Signature: "",
+    receiver2Name: "",
+    receiver2Signature: "",
+    residents: [
+      {
+        id: 1,
+        name: "",
+        present: "נוכח",
+        absenceReason: "",
+        medication: "",
+        shower: "עשה",
+        meal: "",
+        appetite: "",
+        personalPlan: "",
+        duties: "",
+        activity: "",
+        mood: "",
+        unusualCurrent: "",
+        medicationNoRx: "",
+        sleep: "רציפה",
+        wakeup: "תקין",
+      },
+    ],
+    conversationTopic: "",
     status: "טיוטה",
-    notes: "",
-  },
-  {
-    id: 5,
-    apartment: "דירה ה׳",
-    worker: "מתן זיו",
-    shift: "צהריים",
-    date: "19/03/2025",
-    status: "נבדק",
-    notes: "יום רגוע, ללא אירועים מיוחדים",
   },
 ];
 
@@ -76,7 +74,7 @@ const statusBadge = (status) => {
 };
 
 const shiftIcon = (shift) =>
-  ({ בוקר: "☀", צהריים: "◑", לילה: "☽" })[shift] || "·";
+  ({ בוקר: "☀", צהריים: "◑", לילה: "☽", "בוקר+צהריים": "☀◑" })[shift] || "·";
 
 export default function ReportsPage() {
   const [active, setActive] = useState("reports");
@@ -88,11 +86,41 @@ export default function ReportsPage() {
   const [editingReport, setEditingReport] = useState(null);
   const [formData, setFormData] = useState({
     apartment: "",
-    worker: "",
-    shift: "",
-    date: "",
+    shiftType: "בוקר",
+    supervisors: "",
+    startDate: "",
+    dayOfWeek: "",
+    residents: [
+      {
+        id: 1,
+        name: "",
+        present: "נוכח",
+        absenceReason: "",
+        medication: "",
+        shower: "עשה",
+        meal: "",
+        appetite: "",
+        personalPlan: "",
+        duties: "",
+        activity: "",
+        mood: "",
+        unusualCurrent: "",
+        medicationNoRx: "",
+        sleep: "רציפה",
+        wakeup: "תקין",
+      },
+    ],
+    conversationTopic: "",
+    generalInfo: "",
+    shiftDescription: "",
+    unusualEvent: "",
+    maintenanceTasks: "",
+    importantNotes: "",
+    supervisor1Name: "",
+    supervisor2Name: "",
+    receiver1Name: "",
+    receiver2Name: "",
     status: "טיוטה",
-    notes: "",
   });
 
   const handleNavClick = (item) => {
@@ -106,13 +134,46 @@ export default function ReportsPage() {
     setEditingReport(null);
     setViewingReport(null);
     const today = new Date().toLocaleDateString("he-IL");
+    const dayNames = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+    const dayOfWeek = dayNames[new Date().getDay()];
+
     setFormData({
       apartment: "",
-      worker: "",
-      shift: "",
-      date: today,
+      shiftType: "בוקר",
+      supervisors: "",
+      startDate: today,
+      dayOfWeek: dayOfWeek,
+      residents: [
+        {
+          id: 1,
+          name: "",
+          present: "נוכח",
+          absenceReason: "",
+          medication: "",
+          shower: "עשה",
+          meal: "",
+          appetite: "",
+          personalPlan: "",
+          duties: "",
+          activity: "",
+          mood: "",
+          unusualCurrent: "",
+          medicationNoRx: "",
+          sleep: "רציפה",
+          wakeup: "תקין",
+        },
+      ],
+      conversationTopic: "",
+      generalInfo: "",
+      shiftDescription: "",
+      unusualEvent: "",
+      maintenanceTasks: "",
+      importantNotes: "",
+      supervisor1Name: "",
+      supervisor2Name: "",
+      receiver1Name: "",
+      receiver2Name: "",
       status: "טיוטה",
-      notes: "",
     });
     setShowModal(true);
   };
@@ -126,14 +187,7 @@ export default function ReportsPage() {
   const handleEdit = (report) => {
     setEditingReport(report);
     setViewingReport(null);
-    setFormData({
-      apartment: report.apartment,
-      worker: report.worker,
-      shift: report.shift,
-      date: report.date,
-      status: report.status,
-      notes: report.notes,
-    });
+    setFormData(report);
     setShowModal(true);
   };
 
@@ -141,45 +195,20 @@ export default function ReportsPage() {
     e.preventDefault();
 
     if (editingReport) {
-      // עריכה
       setReports(
         reports.map((report) =>
-          report.id === editingReport.id
-            ? {
-                ...report,
-                apartment: formData.apartment,
-                worker: formData.worker,
-                shift: formData.shift,
-                date: formData.date,
-                status: formData.status,
-                notes: formData.notes,
-              }
-            : report,
+          report.id === editingReport.id ? { ...report, ...formData } : report,
         ),
       );
     } else {
-      // הוספה
       const newReport = {
         id: Math.max(...reports.map((r) => r.id)) + 1,
-        apartment: formData.apartment,
-        worker: formData.worker,
-        shift: formData.shift,
-        date: formData.date,
-        status: formData.status,
-        notes: formData.notes,
+        ...formData,
       };
       setReports([...reports, newReport]);
     }
 
     setShowModal(false);
-    setFormData({
-      apartment: "",
-      worker: "",
-      shift: "",
-      date: "",
-      status: "טיוטה",
-      notes: "",
-    });
   };
 
   const handleDelete = (id) => {
@@ -196,9 +225,52 @@ export default function ReportsPage() {
     );
   };
 
-  const shifts = ["הכל", "בוקר", "צהריים", "לילה"];
+  const addResident = () => {
+    setFormData({
+      ...formData,
+      residents: [
+        ...formData.residents,
+        {
+          id: formData.residents.length + 1,
+          name: "",
+          present: "נוכח",
+          absenceReason: "",
+          medication: "",
+          shower: "עשה",
+          meal: "",
+          appetite: "",
+          personalPlan: "",
+          duties: "",
+          activity: "",
+          mood: "",
+          unusualCurrent: "",
+          medicationNoRx: "",
+          sleep: "רציפה",
+          wakeup: "תקין",
+        },
+      ],
+    });
+  };
+
+  const removeResident = (id) => {
+    setFormData({
+      ...formData,
+      residents: formData.residents.filter((r) => r.id !== id),
+    });
+  };
+
+  const updateResident = (id, field, value) => {
+    setFormData({
+      ...formData,
+      residents: formData.residents.map((r) =>
+        r.id === id ? { ...r, [field]: value } : r,
+      ),
+    });
+  };
+
+  const shifts = ["הכל", "בוקר", "צהריים", "לילה", "בוקר+צהריים"];
   const filtered =
-    filter === "הכל" ? reports : reports.filter((r) => r.shift === filter);
+    filter === "הכל" ? reports : reports.filter((r) => r.shiftType === filter);
 
   return (
     <div
@@ -210,7 +282,6 @@ export default function ReportsPage() {
       <aside
         className={`${sidebarOpen ? "w-60" : "w-16"} transition-all duration-300 flex flex-col bg-[#111318] border-l border-zinc-800/60 shrink-0`}
       >
-        {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-zinc-800/60">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
             מ
@@ -222,7 +293,6 @@ export default function ReportsPage() {
           )}
         </div>
 
-        {/* Nav */}
         <nav className="flex-1 px-2 py-4 flex flex-col gap-1">
           {NAV.map((item) => (
             <button
@@ -243,7 +313,6 @@ export default function ReportsPage() {
           ))}
         </nav>
 
-        {/* User */}
         <div className="px-3 py-4 border-t border-zinc-800/60">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-xs font-bold shrink-0">
@@ -263,7 +332,6 @@ export default function ReportsPage() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Topbar */}
         <header className="h-14 flex items-center justify-between px-6 border-b border-zinc-800/60 bg-[#0d0f14]/80 backdrop-blur-sm shrink-0">
           <div className="flex items-center gap-4">
             <button
@@ -285,7 +353,6 @@ export default function ReportsPage() {
           </div>
         </header>
 
-        {/* Content */}
         <main className="flex-1 overflow-y-auto p-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -323,13 +390,13 @@ export default function ReportsPage() {
                       דירה
                     </th>
                     <th className="text-right text-xs text-zinc-500 font-medium px-5 py-3">
-                      עובד
-                    </th>
-                    <th className="text-right text-xs text-zinc-500 font-medium px-5 py-3">
                       משמרת
                     </th>
                     <th className="text-right text-xs text-zinc-500 font-medium px-5 py-3">
                       תאריך
+                    </th>
+                    <th className="text-right text-xs text-zinc-500 font-medium px-5 py-3">
+                      יום
                     </th>
                     <th className="text-right text-xs text-zinc-500 font-medium px-5 py-3">
                       סטטוס
@@ -344,15 +411,17 @@ export default function ReportsPage() {
                       className="border-b border-zinc-800/40 last:border-0 hover:bg-zinc-800/20 transition-colors"
                     >
                       <td className="px-5 py-3 text-zinc-200">{r.apartment}</td>
-                      <td className="px-5 py-3 text-zinc-400">{r.worker}</td>
                       <td className="px-5 py-3">
                         <span className="flex items-center gap-1.5 text-zinc-300">
-                          <span>{shiftIcon(r.shift)}</span>
-                          {r.shift}
+                          <span>{shiftIcon(r.shiftType)}</span>
+                          {r.shiftType}
                         </span>
                       </td>
-                      <td className="px-5 py-3 text-zinc-500 text-xs">
-                        {r.date}
+                      <td className="px-5 py-3 text-zinc-400 text-xs">
+                        {r.startDate}
+                      </td>
+                      <td className="px-5 py-3 text-zinc-400 text-xs">
+                        {r.dayOfWeek}
                       </td>
                       <td className="px-5 py-3">{statusBadge(r.status)}</td>
                       <td className="px-5 py-3 text-left">
@@ -394,212 +463,705 @@ export default function ReportsPage() {
         </main>
       </div>
 
-      {/* Modal */}
-      {showModal && (
+      {/* Modal - טופס מלא */}
+      {showModal && !viewingReport && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#111318] border border-zinc-800/60 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            {viewingReport ? (
-              // View Mode
-              <>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-zinc-100">
-                    פרטי דוח
-                  </h2>
+          <div className="bg-[#111318] border border-zinc-800/60 rounded-xl p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-semibold text-zinc-100 mb-6 text-center">
+              {editingReport ? "עריכת דוח משמרת" : "דוח משמרת חדש"}
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* פרטי המשמרת הכלליים */}
+              <div className="bg-zinc-800/30 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-zinc-200 mb-3">
+                  פרטי המשמרת
+                </h3>
+                <div className="grid grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1.5">
+                      1) איזה משמרת
+                    </label>
+                    <select
+                      value={formData.shiftType}
+                      onChange={(e) =>
+                        setFormData({ ...formData, shiftType: e.target.value })
+                      }
+                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                    >
+                      <option value="בוקר">בוקר</option>
+                      <option value="צהריים">צהריים</option>
+                      <option value="לילה">לילה</option>
+                      <option value="בוקר+צהריים">בוקר+צהריים</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1.5">
+                      2) שמות המדריכים במשמרת
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.supervisors}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          supervisors: e.target.value,
+                        })
+                      }
+                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                      placeholder="שמות המדריכים"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1.5">
+                      3) תאריך תחילת המשמרת
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.startDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, startDate: e.target.value })
+                      }
+                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1.5">
+                      4) יום בשבוע
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.dayOfWeek}
+                      onChange={(e) =>
+                        setFormData({ ...formData, dayOfWeek: e.target.value })
+                      }
+                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 5) דיירים - טבלה לכל דייר */}
+              <div className="bg-zinc-800/30 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-zinc-200">
+                    5) דיירים - מילוי עבור כל דייר
+                  </h3>
                   <button
-                    onClick={() => setShowModal(false)}
-                    className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                    type="button"
+                    onClick={addResident}
+                    className="text-xs bg-violet-600 hover:bg-violet-500 text-white px-3 py-1.5 rounded-lg transition-colors"
                   >
-                    ✕
+                    + הוסף דייר
                   </button>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-xs text-zinc-500 mb-1">דירה</div>
-                      <div className="text-sm text-zinc-200">
-                        {viewingReport.apartment}
+                  {formData.residents.map((resident, index) => (
+                    <div
+                      key={resident.id}
+                      className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-700/40"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-medium text-zinc-300">
+                          דייר #{index + 1}
+                        </h4>
+                        {formData.residents.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeResident(resident.id)}
+                            className="text-xs text-red-400 hover:text-red-300"
+                          >
+                            הסר
+                          </button>
+                        )}
                       </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-zinc-500 mb-1">עובד</div>
-                      <div className="text-sm text-zinc-200">
-                        {viewingReport.worker}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-zinc-500 mb-1">משמרת</div>
-                      <div className="text-sm text-zinc-200 flex items-center gap-2">
-                        <span>{shiftIcon(viewingReport.shift)}</span>
-                        {viewingReport.shift}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-zinc-500 mb-1">תאריך</div>
-                      <div className="text-sm text-zinc-200">
-                        {viewingReport.date}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-zinc-500 mb-1">סטטוס</div>
-                      <div>{statusBadge(viewingReport.status)}</div>
-                    </div>
-                  </div>
 
-                  <div>
-                    <div className="text-xs text-zinc-500 mb-1">הערות</div>
-                    <div className="text-sm text-zinc-300 bg-zinc-800/30 rounded-lg p-3 min-h-[100px]">
-                      {viewingReport.notes || "אין הערות"}
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="col-span-3">
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            שם הדייר
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.name}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "name",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                            placeholder="שם מלא"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            6) נוכח/חסר
+                          </label>
+                          <select
+                            value={resident.present}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "present",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          >
+                            <option value="נוכח">נוכח</option>
+                            <option value="חסר">חסר</option>
+                          </select>
+                        </div>
+
+                        {resident.present === "חסר" && (
+                          <div className="col-span-2">
+                            <label className="block text-xs text-zinc-400 mb-1">
+                              סיבה להעדרות
+                            </label>
+                            <input
+                              type="text"
+                              value={resident.absenceReason}
+                              onChange={(e) =>
+                                updateResident(
+                                  resident.id,
+                                  "absenceReason",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                            />
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            7) נטילת כדורים
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.medication}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "medication",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            8) מקלחת
+                          </label>
+                          <select
+                            value={resident.shower}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "shower",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          >
+                            <option value="עשה">עשה</option>
+                            <option value="לא עשה">לא עשה</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            9) איזה ארוחה
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.meal}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "meal",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                            placeholder="בוקר/צהריים/ערב"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            מידת התיאבון
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.appetite}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "appetite",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          />
+                        </div>
+
+                        <div className="col-span-3">
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            10) פירוט תוכנית אישית של הדייר
+                          </label>
+                          <textarea
+                            value={resident.personalPlan}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "personalPlan",
+                                e.target.value,
+                              )
+                            }
+                            rows="2"
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 resize-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            11) תורנויות שביצע
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.duties}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "duties",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          />
+                        </div>
+
+                        <div className="col-span-2">
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            12) פעילות הדייר במשמרת
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.activity}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "activity",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            13) מצב רוח
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.mood}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "mood",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          />
+                        </div>
+
+                        <div className="col-span-2">
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            14) אירוע חריג שוטף (SOS/מצב רוח/התנהגות/ביקור רופא)
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.unusualCurrent}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "unusualCurrent",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          />
+                        </div>
+
+                        <div className="col-span-3">
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            15) מתן תרופה ללא מרשם - פרט
+                          </label>
+                          <input
+                            type="text"
+                            value={resident.medicationNoRx}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "medicationNoRx",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            16) איך ישן?
+                          </label>
+                          <select
+                            value={resident.sleep}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "sleep",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          >
+                            <option value="רציפה">שינה רציפה</option>
+                            <option value="לא רציפה">לא רציפה</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-zinc-400 mb-1">
+                            17) השכמה ויציאה למסגרת
+                          </label>
+                          <select
+                            value={resident.wakeup}
+                            onChange={(e) =>
+                              updateResident(
+                                resident.id,
+                                "wakeup",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                          >
+                            <option value="תקין">תקין</option>
+                            <option value="לא תקין">לא תקין</option>
+                          </select>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* שאר השדות הכלליים */}
+              <div className="bg-zinc-800/30 rounded-lg p-4 space-y-4">
+                <div>
+                  <label className="block text-sm text-zinc-400 mb-1.5">
+                    18) נושא שיחה ארוכה
+                  </label>
+                  <textarea
+                    value={formData.conversationTopic}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        conversationTopic: e.target.value,
+                      })
+                    }
+                    rows="3"
+                    className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 resize-none"
+                  />
                 </div>
 
-                <div className="flex gap-3 mt-6">
-                  <button
-                    onClick={() => handleEdit(viewingReport)}
-                    className="flex-1 bg-violet-600 hover:bg-violet-500 text-white text-sm px-4 py-2.5 rounded-lg transition-colors"
-                  >
-                    עריכה
-                  </button>
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="flex-1 bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-300 text-sm px-4 py-2.5 rounded-lg transition-colors"
-                  >
-                    סגור
-                  </button>
+                <div>
+                  <label className="block text-sm text-zinc-400 mb-1.5">
+                    19) מידע כללי - אירועים/פעילות קבוצתית/ביקורים
+                  </label>
+                  <textarea
+                    value={formData.generalInfo}
+                    onChange={(e) =>
+                      setFormData({ ...formData, generalInfo: e.target.value })
+                    }
+                    rows="3"
+                    className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 resize-none"
+                  />
                 </div>
-              </>
-            ) : (
-              // Edit/Create Mode
-              <>
-                <h2 className="text-xl font-semibold text-zinc-100 mb-4">
-                  {editingReport ? "עריכת דוח" : "דוח חדש"}
-                </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-zinc-400 mb-1.5">
-                        דירה
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.apartment}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            apartment: e.target.value,
-                          })
-                        }
-                        className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
-                        placeholder="דירה א׳"
-                      />
-                    </div>
+                <div>
+                  <label className="block text-sm text-zinc-400 mb-1.5">
+                    20) תיאור כללי של המשמרת
+                  </label>
+                  <textarea
+                    value={formData.shiftDescription}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shiftDescription: e.target.value,
+                      })
+                    }
+                    rows="3"
+                    className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 resize-none"
+                  />
+                </div>
 
-                    <div>
-                      <label className="block text-sm text-zinc-400 mb-1.5">
-                        עובד
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.worker}
-                        onChange={(e) =>
-                          setFormData({ ...formData, worker: e.target.value })
-                        }
-                        className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
-                        placeholder="שם העובד"
-                      />
-                    </div>
+                <div>
+                  <label className="block text-sm text-zinc-400 mb-1.5">
+                    21) אירוע חריג
+                  </label>
+                  <textarea
+                    value={formData.unusualEvent}
+                    onChange={(e) =>
+                      setFormData({ ...formData, unusualEvent: e.target.value })
+                    }
+                    rows="3"
+                    className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 resize-none"
+                  />
+                </div>
 
-                    <div>
-                      <label className="block text-sm text-zinc-400 mb-1.5">
-                        משמרת
-                      </label>
-                      <select
-                        required
-                        value={formData.shift}
-                        onChange={(e) =>
-                          setFormData({ ...formData, shift: e.target.value })
-                        }
-                        className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
-                      >
-                        <option value="">בחר משמרת</option>
-                        <option value="בוקר">☀ בוקר</option>
-                        <option value="צהריים">◑ צהריים</option>
-                        <option value="לילה">☽ לילה</option>
-                      </select>
-                    </div>
+                <div>
+                  <label className="block text-sm text-zinc-400 mb-1.5">
+                    22) משימות שנעשו - אחזקת דירה
+                  </label>
+                  <textarea
+                    value={formData.maintenanceTasks}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        maintenanceTasks: e.target.value,
+                      })
+                    }
+                    rows="2"
+                    className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 resize-none"
+                  />
+                </div>
 
-                    <div>
-                      <label className="block text-sm text-zinc-400 mb-1.5">
-                        תאריך
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.date}
-                        onChange={(e) =>
-                          setFormData({ ...formData, date: e.target.value })
-                        }
-                        className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
-                        placeholder="DD/MM/YYYY"
-                      />
-                    </div>
+                <div>
+                  <label className="block text-sm text-zinc-400 mb-1.5">
+                    23) הערות חשובות להעביר למדריכים הבאים
+                  </label>
+                  <textarea
+                    value={formData.importantNotes}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        importantNotes: e.target.value,
+                      })
+                    }
+                    rows="2"
+                    className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 resize-none"
+                  />
+                </div>
+              </div>
 
-                    <div>
-                      <label className="block text-sm text-zinc-400 mb-1.5">
-                        סטטוס
-                      </label>
-                      <select
-                        required
-                        value={formData.status}
-                        onChange={(e) =>
-                          setFormData({ ...formData, status: e.target.value })
-                        }
-                        className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
-                      >
-                        <option value="טיוטה">טיוטה</option>
-                        <option value="נשלח">נשלח</option>
-                        <option value="נבדק">נבדק</option>
-                      </select>
-                    </div>
-                  </div>
-
+              {/* חתימות */}
+              <div className="bg-zinc-800/30 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-zinc-200 mb-3">
+                  חתימות
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-zinc-400 mb-1.5">
-                      הערות
+                    <label className="block text-xs text-zinc-400 mb-1.5">
+                      24) שם מדריך מוסר משמרת
                     </label>
-                    <textarea
-                      value={formData.notes}
+                    <input
+                      type="text"
+                      value={formData.supervisor1Name}
                       onChange={(e) =>
-                        setFormData({ ...formData, notes: e.target.value })
+                        setFormData({
+                          ...formData,
+                          supervisor1Name: e.target.value,
+                        })
                       }
-                      rows="6"
-                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors resize-none"
-                      placeholder="הערות על המשמרת..."
+                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
                     />
                   </div>
-
-                  <div className="flex gap-3 pt-2">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-violet-600 hover:bg-violet-500 text-white text-sm px-4 py-2.5 rounded-lg transition-colors"
-                    >
-                      {editingReport ? "שמור שינויים" : "צור דוח"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowModal(false)}
-                      className="flex-1 bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-300 text-sm px-4 py-2.5 rounded-lg transition-colors"
-                    >
-                      ביטול
-                    </button>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1.5">
+                      25) שם מדריך מוסר משמרת (2)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.supervisor2Name}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          supervisor2Name: e.target.value,
+                        })
+                      }
+                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                    />
                   </div>
-                </form>
-              </>
-            )}
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1.5">
+                      28) שם מדריך מקבל משמרת
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.receiver1Name}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          receiver1Name: e.target.value,
+                        })
+                      }
+                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1.5">
+                      29) שם מדריך מקבל משמרת (2)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.receiver2Name}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          receiver2Name: e.target.value,
+                        })
+                      }
+                      className="w-full bg-zinc-800/50 border border-zinc-700/60 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-violet-500/50"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-zinc-500 mt-2">
+                  * חתימות (26, 27, 30, 31) ייחתמו על גבי הדוח המודפס
+                </p>
+              </div>
+
+              {/* כפתורי שמירה */}
+              <div className="flex gap-3 pt-4 border-t border-zinc-800/60">
+                <button
+                  type="submit"
+                  className="flex-1 bg-violet-600 hover:bg-violet-500 text-white text-sm px-4 py-2.5 rounded-lg transition-colors"
+                >
+                  {editingReport ? "שמור שינויים" : "צור דוח"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-300 text-sm px-4 py-2.5 rounded-lg transition-colors"
+                >
+                  ביטול
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal צפייה */}
+      {showModal && viewingReport && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#111318] border border-zinc-800/60 rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-zinc-100">
+                פרטי דוח משמרת
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-zinc-500 hover:text-zinc-300 transition-colors text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-zinc-800/30 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-zinc-200 mb-2">
+                  פרטי משמרת
+                </h3>
+                <div className="grid grid-cols-4 gap-3 text-sm">
+                  <div>
+                    <div className="text-xs text-zinc-500">משמרת</div>
+                    <div className="text-zinc-200">
+                      {viewingReport.shiftType}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-zinc-500">תאריך</div>
+                    <div className="text-zinc-200">
+                      {viewingReport.startDate}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-zinc-500">יום</div>
+                    <div className="text-zinc-200">
+                      {viewingReport.dayOfWeek}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-zinc-500">סטטוס</div>
+                    <div>{statusBadge(viewingReport.status)}</div>
+                  </div>
+                </div>
+              </div>
+
+              {viewingReport.residents &&
+                viewingReport.residents.length > 0 && (
+                  <div className="bg-zinc-800/30 rounded-lg p-4">
+                    <h3 className="text-sm font-semibold text-zinc-200 mb-2">
+                      דיירים
+                    </h3>
+                    {viewingReport.residents.map((resident, index) => (
+                      <div
+                        key={resident.id}
+                        className="mb-3 pb-3 border-b border-zinc-700/40 last:border-0"
+                      >
+                        <div className="text-sm font-medium text-zinc-300 mb-2">
+                          {resident.name || `דייר ${index + 1}`}
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <div>
+                            <span className="text-zinc-500">נוכחות: </span>
+                            <span className="text-zinc-300">
+                              {resident.present}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-zinc-500">מקלחת: </span>
+                            <span className="text-zinc-300">
+                              {resident.shower}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-zinc-500">שינה: </span>
+                            <span className="text-zinc-300">
+                              {resident.sleep}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => handleEdit(viewingReport)}
+                className="flex-1 bg-violet-600 hover:bg-violet-500 text-white text-sm px-4 py-2.5 rounded-lg transition-colors"
+              >
+                עריכה
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-300 text-sm px-4 py-2.5 rounded-lg transition-colors"
+              >
+                סגור
+              </button>
+            </div>
           </div>
         </div>
       )}
