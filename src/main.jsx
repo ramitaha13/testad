@@ -11,6 +11,7 @@ import SocialWorkerReportsPage from "./components/socialWorkerReportsPage.jsx";
 import HomePage from "./components/homePage.jsx";
 import HouseManagerDashboard from "./components/houseManagerDashboard.jsx";
 import InstructorDashboard from "./components/instructorDashboard.jsx";
+import AIAgentPage from "./pages/AIAgentPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
   {
     path: "/instructorDashboard",
     element: <InstructorDashboard />,
+  },
+  {
+    path: "/ai-agent",
+    element: <AIAgentPage />,
   },
 ]);
 
