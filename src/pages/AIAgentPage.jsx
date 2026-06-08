@@ -475,14 +475,13 @@ export default function AIAgentPage() {
         content: m.text,
       }));
 
-      const formData = new FormData();
-      formData.append("message", text);
-      formData.append("history", JSON.stringify(history));
-      formData.append("pdfContents", JSON.stringify(pdfContents));
-
       const response = await fetch(
         "https://servertest-1-itea.onrender.com/ask-agent",
-        { method: "POST", body: formData },
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text, history, pdfContents }),
+        },
       );
       const data = await response.json();
       setMessages((prev) => [
